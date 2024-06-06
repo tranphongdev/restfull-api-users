@@ -9,13 +9,16 @@ import _ from 'lodash';
 import ApiServices from '~/services/ApiServices';
 import ModalAddUser from './ModalAddUser';
 import ModalEditUser from './ModalEditUser';
+import ModalConfirm from './ModalConfirm';
 
 function TableUsers() {
     const [isShow, setIsShow] = useState(false);
     const [isShowEdit, setIsShowEdit] = useState(false);
+    const [isShowDel, setIsShowDel] = useState(false);
     const [dataUsers, setDataUsers] = useState([]);
     const [totalPage, setTotalPage] = useState(0);
     const [dataUserEdit, setDataUserEdit] = useState({});
+    const [dataUserDelete, setDataUserDelete] = useState({});
 
     const getDataUsers = async (page) => {
         const response = await ApiServices.ApiGetUsers(page);
@@ -28,6 +31,7 @@ function TableUsers() {
     const handleClose = () => {
         setIsShow(false);
         setIsShowEdit(false);
+        setIsShowDel(false);
     };
     const handleShow = () => setIsShow(true);
 
@@ -46,9 +50,18 @@ function TableUsers() {
         setDataUsers(cloneUsers);
     };
 
+    const handleDeleteFromModal = (id) => {
+        setDataUsers(dataUsers.filter((user) => user.id !== id));
+    };
+
     const handleEdit = (user) => {
         setDataUserEdit(user);
         setIsShowEdit(true);
+    };
+
+    const handleDel = (user) => {
+        setDataUserDelete(user);
+        setIsShowDel(true);
     };
 
     useEffect(() => {
@@ -86,7 +99,7 @@ function TableUsers() {
                                 <Button onClick={() => handleEdit(item)} className="btn btn-warning">
                                     <BiEdit />
                                 </Button>
-                                <Button className="btn btn-danger">
+                                <Button onClick={() => handleDel(item)} className="btn btn-danger">
                                     <FaRegTrashCan />
                                 </Button>
                             </td>
@@ -122,6 +135,12 @@ function TableUsers() {
                 handleClose={handleClose}
                 dataUserEdit={dataUserEdit}
                 handleUpdateTableFromModal={handleUpdateTableFromModal}
+            />
+            <ModalConfirm
+                show={isShowDel}
+                handleClose={handleClose}
+                dataUserDelete={dataUserDelete}
+                handleDeleteFromModal={handleDeleteFromModal}
             />
         </Container>
     );

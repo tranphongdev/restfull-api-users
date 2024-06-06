@@ -12,6 +12,9 @@ const ApiServices = {
     ApiUpdateUser: async (id, name, job) => {
         return await axios.put(`${URL}/${id}`, { name, job });
     },
+    ApiDeleteUser: async (id) => {
+        return await axios.delete(`${URL}/${id}`);
+    },
 };
 
 export default ApiServices;
