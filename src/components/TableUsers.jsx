@@ -1,30 +1,70 @@
 import { useEffect, useState } from 'react';
-import { Button, Container, Table, Pagination } from 'react-bootstrap';
+import { Button, Container, Table } from 'react-bootstrap';
+import { IoMdPersonAdd } from 'react-icons/io';
+import ReactPaginate from 'react-paginate';
+import { FaRegTrashCan } from 'react-icons/fa6';
+import { BiEdit } from 'react-icons/bi';
+import _ from 'lodash';
 
 import ApiServices from '~/services/ApiServices';
+import ModalAddUser from './ModalAddUser';
+import ModalEditUser from './ModalEditUser';
 
 function TableUsers() {
+    const [isShow, setIsShow] = useState(false);
+    const [isShowEdit, setIsShowEdit] = useState(false);
     const [dataUsers, setDataUsers] = useState([]);
-    const [totalUsers, setTotalUsers] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
+    const [dataUserEdit, setDataUserEdit] = useState({});
 
-    const getDataUsers = async () => {
-        const response = await ApiServices.ApiGetUsers();
+    const getDataUsers = async (page) => {
+        const response = await ApiServices.ApiGetUsers(page);
         if (response && response.data) {
-            setTotalUsers(response.data.total);
             setDataUsers(response.data.data);
             setTotalPage(response.data.total_pages);
         }
     };
 
-    console.log(totalUsers);
+    const handleClose = () => {
+        setIsShow(false);
+        setIsShowEdit(false);
+    };
+    const handleShow = () => setIsShow(true);
+
+    const handlePageClick = (e) => {
+        getDataUsers(+e.selected + 1);
+    };
+
+    const updateTable = (user) => {
+        setDataUsers([user, ...dataUsers]);
+    };
+
+    const handleUpdateTableFromModal = (user) => {
+        let cloneUsers = _.cloneDeep(dataUsers);
+        let index = dataUsers.findIndex((item) => item.id === user.id);
+        cloneUsers[index].first_name = user.first_name;
+        setDataUsers(cloneUsers);
+    };
+
+    const handleEdit = (user) => {
+        setDataUserEdit(user);
+        setIsShowEdit(true);
+    };
 
     useEffect(() => {
-        getDataUsers();
+        getDataUsers(1);
     }, []);
 
     return (
         <Container>
+            <div className="my-4 d-flex align-items-center justify-content-between">
+                <h4 className="m-0">List Users</h4>
+                <div>
+                    <Button onClick={handleShow} className="btn btn-success d-flex align-items-center gap-2">
+                        <IoMdPersonAdd /> Add new user
+                    </Button>
+                </div>
+            </div>
             <Table striped bordered hover>
                 <thead>
                     <tr>
@@ -42,32 +82,47 @@ function TableUsers() {
                             <td>{item?.first_name}</td>
                             <td>{item?.last_name}</td>
                             <td>{item?.email}</td>
-                            <td>
-                                <Button className="btn btn-warning">Edit</Button>
-                                <Button className="btn btn-danger">Delete</Button>
+                            <td className="d-flex align-items-center gap-2">
+                                <Button onClick={() => handleEdit(item)} className="btn btn-warning">
+                                    <BiEdit />
+                                </Button>
+                                <Button className="btn btn-danger">
+                                    <FaRegTrashCan />
+                                </Button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </Table>
 
-            <Pagination>
-                <Pagination.First />
-                <Pagination.Prev />
-                <Pagination.Item>{1}</Pagination.Item>
-                <Pagination.Ellipsis />
+            <ReactPaginate
+                nextLabel="next >"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={3}
+                marginPagesDisplayed={2}
+                pageCount={totalPage}
+                previousLabel="< previous"
+                pageClassName="page-item"
+                pageLinkClassName="page-link"
+                previousClassName="page-item"
+                previousLinkClassName="page-link"
+                nextClassName="page-item"
+                nextLinkClassName="page-link"
+                breakLabel="..."
+                breakClassName="page-item"
+                breakLinkClassName="page-link"
+                containerClassName="pagination"
+                activeClassName="active"
+                renderOnZeroPageCount={null}
+            />
 
-                <Pagination.Item>{10}</Pagination.Item>
-                <Pagination.Item>{11}</Pagination.Item>
-                <Pagination.Item active>{12}</Pagination.Item>
-                <Pagination.Item>{13}</Pagination.Item>
-                <Pagination.Item disabled>{14}</Pagination.Item>
-
-                <Pagination.Ellipsis />
-                <Pagination.Item>{20}</Pagination.Item>
-                <Pagination.Next />
-                <Pagination.Last />
-            </Pagination>
+            <ModalAddUser show={isShow} handleClose={handleClose} updateTable={updateTable} />
+            <ModalEditUser
+                show={isShowEdit}
+                handleClose={handleClose}
+                dataUserEdit={dataUserEdit}
+                handleUpdateTableFromModal={handleUpdateTableFromModal}
+            />
         </Container>
     );
 }
