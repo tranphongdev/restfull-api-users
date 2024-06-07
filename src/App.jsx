@@ -2,12 +2,16 @@ import Header from './components/Header';
 import TableUsers from './components/TableUsers';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import { Route, Routes } from 'react-router-dom';
 
 function App() {
     return (
         <>
-            <Header />
-            <TableUsers />
+            <Routes>
+                <Route path="/" element={<Header />}>
+                    <Route path="/users" element={<TableUsers />} />
+                </Route>
+            </Routes>
 
             <ToastContainer
                 position="top-right"
