@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const URL = 'https://reqres.in/api/users';
+const URL_LOGIN = 'https://reqres.in/api/login';
 
 const ApiServices = {
     ApiGetUsers: async (page) => {
@@ -14,6 +15,9 @@ const ApiServices = {
     },
     ApiDeleteUser: async (id) => {
         return await axios.delete(`${URL}/${id}`);
+    },
+    ApiLogin: async (email, password) => {
+        return await axios.post(`${URL_LOGIN}`, { email, password });
     },
 };
 

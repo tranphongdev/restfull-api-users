@@ -4,10 +4,16 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 
 import logo from '../assets/react.svg';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 
 function Header() {
+    const navigate = useNavigate();
     const activeNavLink = ({ isActive }) => (isActive ? 'active' : '');
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
+    };
 
     return (
         <>
@@ -20,14 +26,11 @@ function Header() {
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
                             <Nav.Link as={NavLink} to="/" className={activeNavLink}>
-                                Home
-                            </Nav.Link>
-                            <Nav.Link as={NavLink} to="/users" className={activeNavLink}>
                                 Manager Users
                             </Nav.Link>
                             <NavDropdown title="Authen" id="basic-nav-dropdown">
-                                <NavDropdown.Item href="/login">Sign In</NavDropdown.Item>
-                                <NavDropdown.Item href="/logout">Sign Out</NavDropdown.Item>
+                                <NavDropdown.Item href="/login">Login</NavDropdown.Item>
+                                <NavDropdown.Item onClick={() => handleLogout()}>Logout</NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
                     </Navbar.Collapse>

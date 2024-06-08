@@ -3,13 +3,15 @@ import TableUsers from './components/TableUsers';
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import { Route, Routes } from 'react-router-dom';
+import Login from './components/Login';
 
 function App() {
     return (
         <>
             <Routes>
                 <Route path="/" element={<Header />}>
-                    <Route path="/users" element={<TableUsers />} />
+                    <Route path="/" element={<TableUsers />} />
+                    <Route path="/login" element={<Login />} />
                 </Route>
             </Routes>
 
